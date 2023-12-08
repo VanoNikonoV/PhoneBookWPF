@@ -62,11 +62,28 @@ namespace PhoneBookWPF.Context
             {
                 string url = $"values";
 
-                string json = await client.GetStringAsync(url);
+                try
+                {
+                    var httpResponseMessage = client.GetAsync(url);
 
-                IEnumerable<IContact> contacts = JsonConvert.DeserializeObject<IEnumerable<Contact>>(json);
+                    var respons = httpResponseMessage.Result.EnsureSuccessStatusCode();
 
-                return contacts;
+                    if(respons.IsSuccessStatusCode)
+                    {
+                        string json = await respons.Content.ReadAsStringAsync();
+
+                        IEnumerable<IContact> contacts = JsonConvert.DeserializeObject<IEnumerable<Contact>>(json);
+
+                        return contacts;
+                    }
+
+                    else return null; //contacts;
+                }
+                catch (Exception exception) 
+                { 
+                    Debug.WriteLine(exception.Message);
+                    return Enumerable.Empty<IContact>();
+                }
             }   
         }
 
