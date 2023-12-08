@@ -1,9 +1,14 @@
-﻿using System;
+﻿using PhoneBookWPF.Context;
+using PhoneBookWPF.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,20 +25,58 @@ namespace PhoneBookWPF.View
     /// <summary>
     /// Логика взаимодействия для AuthorizationWindow.xaml
     /// </summary>
-    public partial class AuthorizationWindow : Window
+    public partial class AuthorizationWindow : Window, INotifyPropertyChanged
     {
-        public AuthorizationWindow()
-        {
-            InitializeComponent();
+        private AuthenticationDataApi authentication;
+
+        public AuthenticationDataApi Authentication 
+        { 
+            get { return authentication; } 
         }
-        private void Button_Click_Enter(object sender, RoutedEventArgs e)
+        private RequestLogin requestLogin;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propName = null)
         {
-            string login = this.login.Text;
-            string password = this.password.Password;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
 
-            string querystring = $"select id_user, login_user, password_user from register where login_user = '{login}' and password_user = '{password}'";
+        public RequestLogin RequestLogin 
+        {   
+            get => requestLogin;
+            
+            set 
+            { 
+                if(value == requestLogin) return; 
+                requestLogin = value;
+                OnPropertyChanged(nameof(RequestLogin));
+            }
+        
+        }
 
-           
+
+        public AuthorizationWindow(RequestLogin requestLogin)
+        {
+            authentication = new AuthenticationDataApi();
+
+            this.requestLogin = requestLogin;
+
+            InitializeComponent();
+
+        }
+        private async void Button_Click_Enter(object sender, RoutedEventArgs e)
+        {
+            requestLogin.Email = this.login.Text;
+            requestLogin.Password = this.password.Password;
+
+            HttpStatusCode httpStatusCode = await authentication.Login(RequestLogin);
+
+            if (httpStatusCode == HttpStatusCode.OK) 
+            { 
+                requestLogin.IsToken = true;
+
+                this.Close(); 
+            }
         }
 
         private void Button_Click_Reg(object sender, RoutedEventArgs e)

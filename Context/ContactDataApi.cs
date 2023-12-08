@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using PhoneBook.Models;
 using System.Text;
 using System.Diagnostics;
 using System.Net;
@@ -8,8 +7,6 @@ using PhoneBookWPF.Models;
 
 namespace PhoneBookWPF.Context
 {
-    //https://v2.d-f.pw/app/create-application
-
     public class ContactDataApi : IContactData
     {
         private readonly IRequestLogin _login;
