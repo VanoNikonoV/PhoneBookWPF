@@ -16,7 +16,7 @@ namespace PhoneBookWPF.Context
             BaseAddress = new Uri("https://a22611-1ae3.k.d-f.pw/") 
         };
         
-        public async Task<HttpStatusCode> Login(RequestLogin request)
+        public async Task<(HttpStatusCode httpStatusCode, string responseText)> Login(RequestLogin request)
         {
             string serelizeContact = JsonConvert.SerializeObject(request);
 
@@ -25,13 +25,22 @@ namespace PhoneBookWPF.Context
                 content: new StringContent(serelizeContact, Encoding.UTF8,
                 mediaType: "application/json"));
 
+           // 
+
             if (response.IsSuccessStatusCode) 
             { 
                 AccessForToken.Token = await response.Content.ReadAsStringAsync();
-                
-                return response.StatusCode; 
+
+                return (response.StatusCode, "Вход выполнен успешно!");
             }
-            else { return response.StatusCode; }
+            else 
+            {
+                var e = await response.Content.ReadAsStringAsync(); // информация об ощибке
+
+                string responseText = e;
+
+                return (response.StatusCode, e);
+            }
         }
 
         public async Task<HttpStatusCode> Register(User user)

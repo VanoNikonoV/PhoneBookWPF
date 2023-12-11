@@ -8,11 +8,14 @@
         mc:Ignorable="d" 
         Title="Телефонна книга" Height="600" Width="1090"
         Icon="/View/phonebook_48px.png" ResizeMode="NoResize">
-
-    <Grid ShowGridLines="False" Height="584" VerticalAlignment="Bottom">
+    
+    <Grid ShowGridLines="False" 
+          Height="584" 
+          VerticalAlignment="Bottom">
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -20,6 +23,7 @@
             <ColumnDefinition Width="185"/>
             <ColumnDefinition Width="850"/>
         </Grid.ColumnDefinitions>
+
         <!--Верхняя панель-->
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center"
@@ -41,13 +45,27 @@
                     Content="Логин" 
                     Margin="5 0 5 0"
                     Command="{Binding LoginCommand}"> 
-                
             </Button>
-            <Button Content="Регистрация" Margin="5 0 5 0">
-                
+
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    IsDefault="True"
+                    Width="90" Height="30"
+                    Cursor="Hand" 
+                    Padding="0" 
+                    Content="Регистрация"
+                    ToolTip="Создать учетную запись"
+                    Command="{Binding RegisterCommand}"
+                    Margin="5 0 5 0">
             </Button>
-            <Button Content="Выход" Margin="5 0 5 0">
-                
+
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    IsDefault="True"
+                    Width="90" Height="30"
+                    Cursor="Hand" 
+                    Padding="0" 
+                    ToolTip="Выйдти из учетной записи"
+                    Command="{Binding ExitCommand}"
+                    Content="Выход" Margin="5 0 5 0">
             </Button>
         </StackPanel>
 
@@ -192,7 +210,15 @@
                                         Width="150"/>
                 </DataGrid.Columns>
             </DataGrid>
+
+            
         </Border>
+        
+        <StatusBar Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusBarText}" />
+            </StatusBarItem>
+        </StatusBar>
 
     </Grid>
 </Window>
