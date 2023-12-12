@@ -1,34 +1,72 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PhoneBookWPF.Models
 {
-    public class User
+    public class User: IDataErrorInfo, INotifyPropertyChanged
     {
-        [Display(Name = "Имя")]
-        [RegularExpression(@"^[а-яА-Я''-'\s]{1,30}$", ErrorMessage = "Имя не корретно")]
-        [Required(ErrorMessage = "Не указано имя")]
-        public string FirstName { get; set; } = string.Empty;
+        private string firstName;
+        
+        public string FirstName 
+        {   
+            get => firstName;
 
-        [Display(Name = "Фамилия")]
-        [RegularExpression(@"^[а-яА-Я''-'\s]{1,30}$")]
-        [Required(ErrorMessage = "Не указано фамилия")]
+            set
+            {
+                if (firstName == value) return;
+                firstName = value;
+                OnPropertyChanged(nameof(FirstName));
+            }
+        }
+
         public string LastName { get; set; } = string.Empty;
-
-        [Display(Name = "e-mail")]
-        [EmailAddress]
-        [DataType(DataType.EmailAddress)]
-        [Required(ErrorMessage = "Не заполенено поле e-mail")]
+ 
         public string Email { get; set; }
 
-        [Display(Name = "Пароль")]
-        [DataType(DataType.Password)]
-        [Required(ErrorMessage = "Не заполенено поле пароль")]
         public string Password{ get; set; } = string.Empty;
 
-        [Display(Name = "Повоторите пароль")]
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-        [Required(ErrorMessage = "Не заполенено поле повоторите пароль")]
-        public string ConfirmPassword {  get; set; } = string.Empty;
+        #region PropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+        #endregion
+
+        private UserValidator validator  = new UserValidator();
+
+        [JsonIgnore]
+        public string this[string columnName]
+        {
+            get
+            {
+                if (validator == null)
+                {
+                    validator = new UserValidator();
+                }
+                var firstOrDefault = validator.Validate(this)
+                    .Errors.FirstOrDefault(lol => lol.PropertyName == columnName);
+                return firstOrDefault?.ErrorMessage;
+            }
+        }
+        [JsonIgnore]
+        public string Error
+        {
+            get
+            {
+                var results = validator.Validate(this);
+
+                if (results != null && results.Errors.Any())
+                {
+                    var errors = string.Join(Environment.NewLine, results.Errors.Select(x => x.ErrorMessage).ToArray());
+
+                    return errors;
+                }
+
+                return string.Empty;
+            }
+        }
     }
 }

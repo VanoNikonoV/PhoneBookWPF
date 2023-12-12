@@ -7,14 +7,9 @@ using System.Windows.Controls;
 
 namespace PhoneBookWPF.ViewModels
 {
-    internal class AuthorizationWindowViewModel
+    internal class AuthorizationViewModel
     {
-        private AuthenticationDataApi authentication;
-
-        public AuthenticationDataApi Authentication
-        {
-            get { return authentication; }
-        }
+        public AuthenticationDataApi Authentication { get; private set; }
 
         private RequestLogin requestLogin;
 
@@ -34,9 +29,9 @@ namespace PhoneBookWPF.ViewModels
 
         public Window Owner { get; private set; }
 
-        public AuthorizationWindowViewModel(RequestLogin requestLogin, Window owner)
+        public AuthorizationViewModel(RequestLogin requestLogin, Window owner)
         {
-            authentication = new AuthenticationDataApi();
+            Authentication = new AuthenticationDataApi();
 
             this.requestLogin = requestLogin;
 
@@ -44,9 +39,8 @@ namespace PhoneBookWPF.ViewModels
         }
 
         private RelayCommandT<PasswordBox> _loginCommand = null;
-
-        public RelayCommandT<PasswordBox> LoginCommand => _loginCommand ?? (_loginCommand  = new RelayCommandT<PasswordBox>(Login));
-
+        public RelayCommandT<PasswordBox> LoginCommand => 
+            _loginCommand ?? (_loginCommand  = new RelayCommandT<PasswordBox>(Login));
 
         private async void Login(PasswordBox passwordBox)
         {
@@ -54,7 +48,7 @@ namespace PhoneBookWPF.ViewModels
             requestLogin.Password = passwordBox.Password;
 
             
-            var result = await authentication.Login(RequestLogin);
+            var result = await Authentication.Login(RequestLogin);
             HttpStatusCode httpStatusCode = result.httpStatusCode;
             string responseText = result.responseText;
 

@@ -64,21 +64,9 @@ namespace PhoneBookWPF.ViewModels
 
         public RelayCommand RegisterCommand => registerCommand ?? (registerCommand = new RelayCommand(Register, CanLogin));
 
+       
+
         #endregion
-
-        private async void Register()
-        {
-            //this.enterBottun.Visibility = Visibility.Hidden;
-            //string login = this.login.Text;
-            //string password = this.password.Password;
-            //string confirmPassword = this.confirmPassword.Password;
-
-            //if (password.Equals(confirmPassword))
-            //{
-
-            //}
-            //else { MessageBox.Show("Значения паролей не совпадаю!"); }
-        }
 
         private bool CanExit()
         {
@@ -101,6 +89,13 @@ namespace PhoneBookWPF.ViewModels
             authorizationWindow.Show();
         }
 
+        private void Register()
+        {
+            RegisterWindow registerWindow = new RegisterWindow(){ Owner = Application.Current.MainWindow };
+
+            registerWindow.Show();
+        }
+
         private void Exit()
         {
             this.RequestLogin.IsToken = false;
@@ -111,6 +106,8 @@ namespace PhoneBookWPF.ViewModels
 
             AccessForToken.Token = string.Empty;
         }
+
+
 
         private async Task<IEnumerable<IContact>> Contacts()
         {

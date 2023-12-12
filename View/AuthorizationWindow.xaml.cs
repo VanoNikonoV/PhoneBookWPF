@@ -9,15 +9,15 @@ namespace PhoneBookWPF.View
     /// </summary>
     public partial class AuthorizationWindow : Window
     {
-        private AuthorizationWindowViewModel authorizationWindowViewModel;
+        private AuthorizationViewModel authorizationViewModel;
 
         public AuthorizationWindow(RequestLogin requestLogin)
         {
-            authorizationWindowViewModel = new(requestLogin, this);
+            authorizationViewModel = new(requestLogin, this);
 
             InitializeComponent();
 
-            this.DataContext = authorizationWindowViewModel;
+            this.DataContext = authorizationViewModel;
         }
     }
 }
