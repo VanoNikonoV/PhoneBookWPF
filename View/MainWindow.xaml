@@ -114,7 +114,10 @@
                 Margin="0 5"
                 Cursor="Hand" 
                 Padding="0" 
-                ToolTip="Удалить запись">
+                ToolTip="Удалить запись"
+                Command="{Binding DeleteContactCommand}"
+                CommandParameter="{Binding ElementName=gridView, 
+                Path=SelectedItem}">
                 <materialDesign:PackIcon Kind="AccountCancel" 
                                          Width="25" Height="25" 
                                          HorizontalAlignment="Center" 

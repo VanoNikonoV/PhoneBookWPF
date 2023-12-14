@@ -42,7 +42,6 @@ namespace PhoneBookWPF.ViewModels
         {
             RequestLogin.Email = TextEmail;
             RequestLogin.Password = passwordBox.Password;
-            //this.RequestLogin = new RequestLogin() { Email = TextEmail, Password = passwordBox.Password };
 
             var result = await Authentication.Login(RequestLogin);
             HttpStatusCode httpStatusCode = result.httpStatusCode;

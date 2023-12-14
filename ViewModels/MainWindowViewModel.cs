@@ -4,6 +4,7 @@ using PhoneBookWPF.Models;
 using PhoneBookWPF.View;
 using PhoneBookWPF.View.Base;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Text;
 using System.Windows;
 
@@ -22,7 +23,9 @@ namespace PhoneBookWPF.ViewModels
 
         //public string StatusBarText { get; set; }
 
-        public  IContactData ContextAuth { get; private set; }
+        public  IContactData Context { get; private set; }
+
+        
 
         private ObservableCollection<IContact>? contactView;
 
@@ -38,13 +41,13 @@ namespace PhoneBookWPF.ViewModels
 
         public MainWindowViewModel()
         {
-            ContextAuth = new ContactDataApi(this.RequestLogin);
+            Context = new ContactDataApi(this.RequestLogin);
 
             this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию"};
 
             AccessForToken.onСhangedToken += AccessForToken_onСhangedToken;
 
-            IEnumerable<IContact> tempCollection = ContextAuth.GetAllContact().Result;
+            IEnumerable<IContact> tempCollection = Context.GetAllContact().Result;
 
             this.ContactView = HidingData(tempCollection);
         }
@@ -53,13 +56,15 @@ namespace PhoneBookWPF.ViewModels
         {
             if (!(AccessForToken.Token == string.Empty)) 
             {
-                IEnumerable<IContact> tempCollection = await ContextAuth.GetAllContact();
+                Context = new ContactDataApi(this.RequestLogin);
+
+                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
 
                 this.ContactView = new ObservableCollection<IContact>(tempCollection);
             }
             else
             {
-                IEnumerable<IContact> tempCollection = await ContextAuth.GetAllContact();
+                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
 
                 this.ContactView = HidingData(tempCollection);
             }
@@ -73,15 +78,17 @@ namespace PhoneBookWPF.ViewModels
 
 
         private RelayCommand exitCommand = null;
-        public RelayCommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(Exit, CanExit));
+        public RelayCommand ExitCommand =>
+            exitCommand ?? (exitCommand = new RelayCommand(Exit, CanExit));
 
 
         private RelayCommand registerCommand = null;
-        public RelayCommand RegisterCommand => registerCommand ?? (registerCommand = new RelayCommand(Register, CanLogin));
+        public RelayCommand RegisterCommand => 
+            registerCommand ?? (registerCommand = new RelayCommand(Register, CanLogin));
 
-        private RelayCommand deleteContactCommand = null;
-        public RelayCommand DeleteContactCommand => deleteContactCommand ?? (deleteContactCommand = new RelayCommand(DeleteContact, CanLogin));
-
+        private RelayCommandT<IContact> deleteContactCommand = null;
+        public RelayCommandT<IContact> DeleteContactCommand => 
+            deleteContactCommand ?? (deleteContactCommand = new RelayCommandT<IContact>(DeleteContact, CanDelete));
         #endregion
 
         #region Методы для команд
@@ -95,6 +102,13 @@ namespace PhoneBookWPF.ViewModels
         private bool CanLogin()
         {
             bool flag = RequestLogin.IsToken ? false : true;
+
+            return flag;
+        }
+
+        private bool CanDelete(IContact contact)
+        {
+            bool flag = RequestLogin.IsToken ? true : false;
 
             return flag;
         }
@@ -124,9 +138,13 @@ namespace PhoneBookWPF.ViewModels
             AccessForToken.Token = string.Empty;
         }
 
-        private void DeleteContact()
+        private async void DeleteContact(IContact contact)
         {
-            throw new NotImplementedException();
+            HttpStatusCode result = await Context.DeleteContact(contact.Id);
+
+            if (result == HttpStatusCode.NotFound) { MessageBox.Show(result.ToString()); }
+
+            if (result == HttpStatusCode.OK) { AccessForToken_onСhangedToken();}
         }
         #endregion
         private ObservableCollection<IContact> HidingData(IEnumerable<IContact> tempCollection)
