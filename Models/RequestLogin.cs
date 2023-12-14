@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace PhoneBookWPF.Models
 {
-   
     public class RequestLogin: IRequestLogin, INotifyPropertyChanged
     {
         private string email = string.Empty;
@@ -22,7 +21,18 @@ namespace PhoneBookWPF.Models
 
         public string Password { get; set; } = string.Empty;
 
-        public bool IsToken { get; set; } = false;
+        private bool isToken = false;
+        public bool IsToken 
+        {
+            get => isToken;
+
+            set
+            {
+                if (value == isToken) return;
+                isToken = value;
+                OnPropertyChanged(nameof(IsToken));
+            }
+        }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;

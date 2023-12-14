@@ -4,20 +4,44 @@ using PhoneBookWPF.Models;
 using PhoneBookWPF.View;
 using PhoneBookWPF.View.Base;
 using System.Collections.ObjectModel;
+using System.Security.Principal;
+using System.Text;
 using System.Windows;
+using System.Windows.Data;
 
 namespace PhoneBookWPF.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
-        private RequestLogin _requestlogin;
+        private RequestLogin _requestLogin = new RequestLogin();
 
         public RequestLogin RequestLogin
         {  
-            get => _requestlogin;
+            get => _requestLogin;
 
-            set => Set(ref _requestlogin, value, "RequestLogin");
+            set
+            {
+                if (_requestLogin == value) return;
+                _requestLogin = value;
+
+                if (_requestLogin.IsToken) 
+                {
+                    IEnumerable<IContact> tempCollection = Contacts().Result;
+
+                     this.ContactView = new ObservableCollection<IContact>(tempCollection);
+                }
+                if (!_requestLogin.IsToken)
+                {
+                    IEnumerable<IContact> tempCollection = Contacts().Result;
+
+                    this.ContactView = HidingData(tempCollection);
+                }
+                base.OnPropertyChanged(nameof(RequestLogin));
+            }
+            //set => Set(ref _requestlogin, value, "RequestLogin");
         }
+
+       
 
         //public string StatusBarText { get; set; }
 
@@ -30,23 +54,33 @@ namespace PhoneBookWPF.ViewModels
         /// </summary>
         public ObservableCollection<IContact> ContactView
         {
-            get
-            {
-                if (contactView == null)
-                {                   
-                    IEnumerable<IContact> temp = Contacts().Result;
+            get => contactView;
 
-                    contactView = new ObservableCollection<IContact>(temp);
-                }
-                return contactView;
-            }
+            set => Set(ref contactView, value, "ContactView");
+
+            //get
+            //{
+            //    if (contactView == null)
+            //    {                   
+            //        IEnumerable<IContact> temp = Contacts().Result;
+
+            //        contactView = new ObservableCollection<IContact>(temp);
+            //    }
+            //    return contactView;
+            //}
         }
 
         public MainWindowViewModel()
         {
-            _requestlogin = new RequestLogin() { Email = "Не авторзованый пользователь"};
+            //RequestLogin = new RequestLogin() { Email = "Не авторзованый пользователь"};
 
-            Context = new ContactDataApi(_requestlogin);
+            //contactView = new ObservableCollection<IContact>();
+            //this.RequestLogin = new RequestLogin() { Email = "Exit program" };
+
+            Context = new ContactDataApi(this.RequestLogin);
+
+            this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию"};
+
         }
 
         #region Commands
@@ -70,14 +104,14 @@ namespace PhoneBookWPF.ViewModels
 
         private bool CanExit()
         {
-            bool flag = _requestlogin.IsToken ? true : false;
+            bool flag = RequestLogin.IsToken ? true : false;
 
             return flag;
         }
 
         private bool CanLogin()
         {
-            bool flag = _requestlogin.IsToken ? false : true;
+            bool flag = RequestLogin.IsToken ? false : true;
 
             return flag;
         }
@@ -87,6 +121,8 @@ namespace PhoneBookWPF.ViewModels
             AuthorizationWindow authorizationWindow = new AuthorizationWindow(RequestLogin) { Owner = Application.Current.MainWindow};
 
             authorizationWindow.Show();
+
+            
         }
 
         private void Register()
@@ -107,7 +143,61 @@ namespace PhoneBookWPF.ViewModels
             AccessForToken.Token = string.Empty;
         }
 
+        private ObservableCollection<IContact> HidingData(IEnumerable<IContact> tempCollection)
+        {
+            ObservableCollection<IContact> ContactsForAnonymous = new ObservableCollection<IContact>();
 
+            foreach (IContact contact in tempCollection)
+            {
+                string outputTelefon = ConcealmentData(contact?.Telefon);
+                string outputAddres = ConcealmentData(contact?.Address);
+                string outputDisripion = ConcealmentData(contact?.Description);
+
+                Contact outputContact = new Contact()
+                {
+                    Id = contact.Id,
+                    FirstName = contact.FirstName,
+                    MiddleName = contact.MiddleName,
+                    LastName = contact.LastName,
+                    Telefon = outputTelefon,
+                    Address = outputAddres,
+                    Description = outputDisripion
+                };
+
+                ContactsForAnonymous.Add(outputContact);
+            }
+
+            return ContactsForAnonymous;
+        }
+
+        /// <summary>
+        /// Сокрыте данных контакта
+        /// </summary>
+        /// <param name="inputData">Входные данные</param>
+        /// <returns>Скрытые данные либо "нет данных"</returns>
+        private string ConcealmentData(string? inputData)
+        {
+            if (inputData == null) { return null; }
+
+            if (inputData.Length > 0 && inputData != null && inputData != String.Empty)
+            {
+                string data = inputData;
+
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; i < inputData.Length; i++)
+                {
+                    if (data[i] != ' ')
+                    {
+                        sb.Append('*');
+                    }
+                    else sb.Append(data[i]);
+                }
+                return sb.ToString();
+            }
+
+            else return "нет данных";
+        }
 
         private async Task<IEnumerable<IContact>> Contacts()
         {

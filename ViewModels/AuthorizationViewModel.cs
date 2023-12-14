@@ -1,13 +1,14 @@
 ﻿using PhoneBookWPF.Commands;
 using PhoneBookWPF.Context;
 using PhoneBookWPF.Models;
+using PhoneBookWPF.View.Base;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace PhoneBookWPF.ViewModels
 {
-    internal class AuthorizationViewModel
+    internal class AuthorizationViewModel: ViewModel
     {
         public AuthenticationDataApi Authentication { get; private set; }
 
@@ -17,12 +18,7 @@ namespace PhoneBookWPF.ViewModels
         {
             get => requestLogin;
 
-            set
-            {
-                if (value == requestLogin) return;
-                requestLogin = value;
-            }
-
+            set => Set(ref requestLogin, value, "RequestLogin");
         }
 
         public string TextEmail { get; set; }
@@ -44,17 +40,19 @@ namespace PhoneBookWPF.ViewModels
 
         private async void Login(PasswordBox passwordBox)
         {
-            requestLogin.Email = TextEmail;
-            requestLogin.Password = passwordBox.Password;
+            RequestLogin.Email = TextEmail;
+            RequestLogin.Password = passwordBox.Password;
+            //this.RequestLogin = new RequestLogin() { Email = TextEmail, Password = passwordBox.Password };
 
-            
             var result = await Authentication.Login(RequestLogin);
             HttpStatusCode httpStatusCode = result.httpStatusCode;
             string responseText = result.responseText;
 
             if (httpStatusCode == HttpStatusCode.OK)
             {
-                requestLogin.IsToken = true;
+
+                //this.RequestLogin = new RequestLogin() { Email = TextEmail, Password = passwordBox.Password, IsToken = true };
+                RequestLogin.IsToken = true;
 
                 MessageBox.Show(responseText);
 
