@@ -12,22 +12,12 @@ namespace PhoneBookWPF.View
 
         public RegisterWindow()
         {
-            RegisterViewModel = new RegisterViewModel();
+            RegisterViewModel = new RegisterViewModel(this);
 
             InitializeComponent();
 
             this.DataContext = RegisterViewModel;
             
-        }
-
-        private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (this.password.Password == this.confirmPassword.Password)
-            {
-                RegisterViewModel.PasswordBox = this.password.Password;
-                this.alert.Text = string.Empty;
-            }
-            else this.alert.Text = "Пароли не совпадают";
         }
     }
 }

@@ -7,6 +7,6 @@ namespace PhoneBookWPF.Context
     {
         Task<(HttpStatusCode httpStatusCode, string responseText)> Login(RequestLogin request);
 
-        Task<HttpStatusCode> Register(User user);
+        Task<(HttpStatusCode httpStatusCode, string responseText)> Register(User user);
     }
 }

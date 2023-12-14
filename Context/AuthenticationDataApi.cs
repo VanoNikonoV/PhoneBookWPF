@@ -25,8 +25,6 @@ namespace PhoneBookWPF.Context
                 content: new StringContent(serelizeContact, Encoding.UTF8,
                 mediaType: "application/json"));
 
-           // 
-
             if (response.IsSuccessStatusCode) 
             { 
                 AccessForToken.Token = await response.Content.ReadAsStringAsync();
@@ -35,15 +33,15 @@ namespace PhoneBookWPF.Context
             }
             else 
             {
-                var e = await response.Content.ReadAsStringAsync(); // информация об ощибке
+                var error = await response.Content.ReadAsStringAsync(); // информация об ощибке
 
-                string responseText = e;
+                string responseText = error;
 
-                return (response.StatusCode, e);
+                return (response.StatusCode, error);
             }
         }
 
-        public async Task<HttpStatusCode> Register(User user)
+        public async Task<(HttpStatusCode httpStatusCode, string responseText)> Register(User user)
         {
             UserDto userDto = new UserDto();
 
@@ -62,8 +60,18 @@ namespace PhoneBookWPF.Context
                 content: new StringContent(serelizeUser, Encoding.UTF8,
                 mediaType: "application/json"));
 
-            if (response.IsSuccessStatusCode) { return response.StatusCode; }
-            else { return response.StatusCode; }
+            if (response.IsSuccessStatusCode)
+            {
+                return (response.StatusCode, "Регистрация прошла успешено!");
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync(); // информация об ощибке
+
+                string responseText = error;
+
+                return (response.StatusCode, error);
+            }
 
         }
     }

@@ -19,14 +19,17 @@ namespace PhoneBookWPF.Models
 
             RuleFor(user => user.Email)
                 .NotEmpty().WithMessage("Нужно указать значение")
-                .EmailAddress().WithMessage("A valid email address is required."); ;
+                .EmailAddress().WithMessage("Не верный формат e-mail адреса"); ;
 
             RuleFor(user => user.Password).NotEmpty().WithMessage("Пароль не заполен");
-                //.Equal(customer => customer.ConfirmPassword).WithMessage("Пароли не совпадают");
+
+            RuleFor(p => p.ConfirmPassword)
+                .NotNull().WithMessage("повторить пароль не заполено")
+                .Equal(p => p.Password)
+                .WithMessage("Пароли не совпадают");
 
         }
 
-        
         /// Определяет является ли первым символом 
         /// текущего экземпляра строки символ верхнего регистра
         /// </summary>
@@ -42,6 +45,5 @@ namespace PhoneBookWPF.Models
             return char.IsUpper(ch);
         }
 
-       
     }
 }

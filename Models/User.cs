@@ -6,8 +6,7 @@ namespace PhoneBookWPF.Models
 {
     public class User: IDataErrorInfo, INotifyPropertyChanged
     {
-        private string firstName;
-        
+        private string firstName = string.Empty;
         public string FirstName 
         {   
             get => firstName;
@@ -20,11 +19,56 @@ namespace PhoneBookWPF.Models
             }
         }
 
-        public string LastName { get; set; } = string.Empty;
- 
-        public string Email { get; set; }
+        private string lastName = string.Empty;
+        public string LastName 
+        {
+            get => lastName;
+            set
+            { 
+                if (lastName == value) return;
+                lastName = value; 
+                OnPropertyChanged(nameof(LastName));
+            }
+        } 
 
-        public string Password{ get; set; } = string.Empty;
+        private string email = string.Empty;
+        public string Email 
+        {
+            get => email;
+
+            set 
+            { 
+                if (email == value) return;
+                email = value; 
+                OnPropertyChanged(nameof(Email));
+            }
+        } 
+
+        private string password = string.Empty;
+        public string Password 
+        {
+            get => password;
+
+            set 
+            { 
+                if (password == value) return;
+                password = value;
+                OnPropertyChanged(nameof(Password));
+            } 
+        } 
+
+        private string confirmPassword = string.Empty;
+        public string ConfirmPassword 
+        {
+            get => confirmPassword;
+            
+            set 
+            { 
+                if (confirmPassword == value) return;
+                confirmPassword = value;
+                OnPropertyChanged(nameof(ConfirmPassword));
+            }
+        } 
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,7 +79,7 @@ namespace PhoneBookWPF.Models
         }
         #endregion
 
-        private UserValidator validator  = new UserValidator();
+        private UserValidator validator;
 
         [JsonIgnore]
         public string this[string columnName]

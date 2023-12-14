@@ -1,39 +1,26 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using PhoneBookWPF.Commands;
+﻿using PhoneBookWPF.Commands;
 using PhoneBookWPF.Context;
 using PhoneBookWPF.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+using System.Windows;
 
 namespace PhoneBookWPF.ViewModels
 {
     public class RegisterViewModel
     {
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
+         public AuthenticationDataApi Authentication { get; private set; }
 
-        public string PasswordBox { get; set; } = string.Empty;
+        public User User { get; set; }
 
-        private UserValidator _validator;
+        public Window Owner { get; private set; }
 
-        public AuthenticationDataApi Authentication { get; private set; }
-
-        private User user;
-
-        public RegisterViewModel()
+        public RegisterViewModel(Window owner)
         {
             Authentication = new();
 
-            user = new();
+            User = new();
 
-            _validator = new();
+            this.Owner = owner;
         }
 
         private RelayCommand registrCommand = null;
@@ -42,24 +29,29 @@ namespace PhoneBookWPF.ViewModels
 
         private bool CanRegister()
         {
-            user.FirstName = FirstName;
-            user.LastName = LastName;
-            user.Email = Email;
-            user.Password = PasswordBox;
-
-            var result = _validator.Validate(user);
-
-          
-
-            if (result.IsValid) return true;
-            else return false;
-
-
+            if (User.Error == string.Empty)
+            {
+                return true;
+            }
+            else { return false; }
         }
 
         private async void Register()
         {
-           HttpStatusCode httpStatusCode = await this.Authentication.Register(user);
+            var result = await  this.Authentication.Register(User);
+            HttpStatusCode httpStatusCode = result.httpStatusCode;
+            string responseText = result.responseText;
+
+            if (httpStatusCode == HttpStatusCode.OK)
+            {
+                MessageBox.Show(responseText);
+
+                this.Owner.Close();
+            }
+            else
+            {
+                MessageBox.Show(responseText);
+            }
         }
     }
 }
