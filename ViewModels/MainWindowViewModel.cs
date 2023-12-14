@@ -4,10 +4,8 @@ using PhoneBookWPF.Models;
 using PhoneBookWPF.View;
 using PhoneBookWPF.View.Base;
 using System.Collections.ObjectModel;
-using System.Security.Principal;
 using System.Text;
 using System.Windows;
-using System.Windows.Data;
 
 namespace PhoneBookWPF.ViewModels
 {
@@ -24,7 +22,7 @@ namespace PhoneBookWPF.ViewModels
 
         //public string StatusBarText { get; set; }
 
-        public  IContactData Context { get; private set; }
+        public  IContactData ContextAuth { get; private set; }
 
         private ObservableCollection<IContact>? contactView;
 
@@ -40,29 +38,28 @@ namespace PhoneBookWPF.ViewModels
 
         public MainWindowViewModel()
         {
-            Context = new ContactDataApi(this.RequestLogin);
+            ContextAuth = new ContactDataApi(this.RequestLogin);
 
             this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию"};
 
             AccessForToken.onСhangedToken += AccessForToken_onСhangedToken;
 
-            IEnumerable<IContact> tempCollection = Context.GetAllContact().Result;
+            IEnumerable<IContact> tempCollection = ContextAuth.GetAllContact().Result;
 
             this.ContactView = HidingData(tempCollection);
-
         }
 
         private async void AccessForToken_onСhangedToken()
         {
             if (!(AccessForToken.Token == string.Empty)) 
             {
-                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
+                IEnumerable<IContact> tempCollection = await ContextAuth.GetAllContact();
 
                 this.ContactView = new ObservableCollection<IContact>(tempCollection);
             }
             else
             {
-                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
+                IEnumerable<IContact> tempCollection = await ContextAuth.GetAllContact();
 
                 this.ContactView = HidingData(tempCollection);
             }
@@ -71,22 +68,23 @@ namespace PhoneBookWPF.ViewModels
         #region Commands
 
         private RelayCommand loginCommand = null;
-
         public RelayCommand LoginCommand =>
             loginCommand ?? (loginCommand = new RelayCommand(Login, CanLogin));
+
 
         private RelayCommand exitCommand = null;
         public RelayCommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(Exit, CanExit));
 
 
         private RelayCommand registerCommand = null;
-
         public RelayCommand RegisterCommand => registerCommand ?? (registerCommand = new RelayCommand(Register, CanLogin));
 
-       
+        private RelayCommand deleteContactCommand = null;
+        public RelayCommand DeleteContactCommand => deleteContactCommand ?? (deleteContactCommand = new RelayCommand(DeleteContact, CanLogin));
 
         #endregion
 
+        #region Методы для команд
         private bool CanExit()
         {
             bool flag = RequestLogin.IsToken ? true : false;
@@ -105,7 +103,7 @@ namespace PhoneBookWPF.ViewModels
         {
             AuthorizationWindow authorizationWindow = new AuthorizationWindow(RequestLogin) { Owner = Application.Current.MainWindow};
 
-            authorizationWindow.Show();
+            authorizationWindow.Show(); 
         }
 
         private void Register()
@@ -126,6 +124,11 @@ namespace PhoneBookWPF.ViewModels
             AccessForToken.Token = string.Empty;
         }
 
+        private void DeleteContact()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
         private ObservableCollection<IContact> HidingData(IEnumerable<IContact> tempCollection)
         {
             ObservableCollection<IContact> ContactsForAnonymous = new ObservableCollection<IContact>();

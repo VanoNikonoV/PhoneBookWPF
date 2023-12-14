@@ -33,7 +33,7 @@
 
             <TextBox IsReadOnly="True"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Margin="5 5" Width="250"
+                Margin="5 5" Width="200"
                 Text="{Binding RequestLogin.Email}"/>
 
             <Button Style="{StaticResource MaterialDesignFlatButton}"

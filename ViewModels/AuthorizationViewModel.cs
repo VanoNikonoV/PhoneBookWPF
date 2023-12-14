@@ -52,7 +52,7 @@ namespace PhoneBookWPF.ViewModels
             {
                 RequestLogin.IsToken = true;
 
-                MessageBox.Show(responseText);
+                //MessageBox.Show(responseText);
 
                 this.Owner.Close();
             }
