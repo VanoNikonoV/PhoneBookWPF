@@ -50,8 +50,6 @@ namespace PhoneBookWPF.ViewModels
 
             if (httpStatusCode == HttpStatusCode.OK)
             {
-
-                //this.RequestLogin = new RequestLogin() { Email = TextEmail, Password = passwordBox.Password, IsToken = true };
                 RequestLogin.IsToken = true;
 
                 MessageBox.Show(responseText);

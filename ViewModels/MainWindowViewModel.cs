@@ -19,29 +19,8 @@ namespace PhoneBookWPF.ViewModels
         {  
             get => _requestLogin;
 
-            set
-            {
-                if (_requestLogin == value) return;
-                _requestLogin = value;
-
-                if (_requestLogin.IsToken) 
-                {
-                    IEnumerable<IContact> tempCollection = Contacts().Result;
-
-                     this.ContactView = new ObservableCollection<IContact>(tempCollection);
-                }
-                if (!_requestLogin.IsToken)
-                {
-                    IEnumerable<IContact> tempCollection = Contacts().Result;
-
-                    this.ContactView = HidingData(tempCollection);
-                }
-                base.OnPropertyChanged(nameof(RequestLogin));
-            }
-            //set => Set(ref _requestlogin, value, "RequestLogin");
+            set => Set(ref _requestLogin, value, "RequestLogin");
         }
-
-       
 
         //public string StatusBarText { get; set; }
 
@@ -57,30 +36,36 @@ namespace PhoneBookWPF.ViewModels
             get => contactView;
 
             set => Set(ref contactView, value, "ContactView");
-
-            //get
-            //{
-            //    if (contactView == null)
-            //    {                   
-            //        IEnumerable<IContact> temp = Contacts().Result;
-
-            //        contactView = new ObservableCollection<IContact>(temp);
-            //    }
-            //    return contactView;
-            //}
         }
 
         public MainWindowViewModel()
         {
-            //RequestLogin = new RequestLogin() { Email = "Не авторзованый пользователь"};
-
-            //contactView = new ObservableCollection<IContact>();
-            //this.RequestLogin = new RequestLogin() { Email = "Exit program" };
-
             Context = new ContactDataApi(this.RequestLogin);
 
             this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию"};
 
+            AccessForToken.onСhangedToken += AccessForToken_onСhangedToken;
+
+            IEnumerable<IContact> tempCollection = Context.GetAllContact().Result;
+
+            this.ContactView = HidingData(tempCollection);
+
+        }
+
+        private async void AccessForToken_onСhangedToken()
+        {
+            if (!(AccessForToken.Token == string.Empty)) 
+            {
+                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
+
+                this.ContactView = new ObservableCollection<IContact>(tempCollection);
+            }
+            else
+            {
+                IEnumerable<IContact> tempCollection = await Context.GetAllContact();
+
+                this.ContactView = HidingData(tempCollection);
+            }
         }
 
         #region Commands
@@ -121,8 +106,6 @@ namespace PhoneBookWPF.ViewModels
             AuthorizationWindow authorizationWindow = new AuthorizationWindow(RequestLogin) { Owner = Application.Current.MainWindow};
 
             authorizationWindow.Show();
-
-            
         }
 
         private void Register()
@@ -199,12 +182,6 @@ namespace PhoneBookWPF.ViewModels
             else return "нет данных";
         }
 
-        private async Task<IEnumerable<IContact>> Contacts()
-        {
-            IEnumerable<IContact> temp = await Context.GetAllContact();
-
-            return temp;
-        }
 
         /// <summary>
         /// Метод удаляющий текст сообщения в StatusBar
