@@ -27,6 +27,9 @@ namespace PhoneBookWPF.ViewModels
 
         private RequestLogin _requestLogin = new RequestLogin();
 
+        /// <summary>
+        /// Пользователь приложения, связан с логикой работы контекста (получение данных)
+        /// </summary>
         public RequestLogin RequestLogin
         {  
             get => _requestLogin;
@@ -34,15 +37,23 @@ namespace PhoneBookWPF.ViewModels
             set => Set(ref _requestLogin, value, "RequestLogin");
         }
 
-        //public string StatusBarText { get; set; }
+        private string statusBarText = "Здесь будет подсказка";
+        public string StatusBarText 
+        {
+            get => statusBarText; 
+            set => Set(ref statusBarText, value, "StatusBarText");
+        } 
 
+        /// <summary>
+        /// Источник данных для приложения
+        /// </summary>
         public  IContactData Context { get; private set; }
         
 
         private ObservableCollection<IContact>? contactView;
 
         /// <summary>
-        /// Коллекция контактов
+        /// Коллекция контактов для отображения во View
         /// </summary>
         public ObservableCollection<IContact> ContactView
         {
@@ -52,12 +63,14 @@ namespace PhoneBookWPF.ViewModels
         }
 
         private Contact currentContact;
-        public Contact CurrentContac 
+        /// <summary>
+        /// Выбранный клинет - DataGrid
+        /// </summary>
+        public Contact CurrentContact 
         {   
             get => currentContact;
             set => Set(ref currentContact, value, "CurrentContac");
         }
-        
 
         /// <summary>
         /// Обновление списка после смены пользователя, изменения данных в коллекции
@@ -104,6 +117,10 @@ namespace PhoneBookWPF.ViewModels
         public RelayCommand AddContactCommand => 
             addContactCommand ?? (addContactCommand = new RelayCommand(AddContact, CanExit));
 
+        private RelayCommand editContactCommand = null;
+        public RelayCommand EditContactCommand => 
+            editContactCommand ?? (editContactCommand = new RelayCommand(EditContact, CanExit));
+
         #endregion
 
         #region Методы для команд
@@ -121,6 +138,9 @@ namespace PhoneBookWPF.ViewModels
             return flag;
         }
 
+        /// <summary>
+        /// Логика входа в программу
+        /// </summary>
         private void Login()
         {
             AuthorizationWindow authorizationWindow = 
@@ -129,6 +149,9 @@ namespace PhoneBookWPF.ViewModels
             authorizationWindow.Show(); 
         }
 
+        /// <summary>
+        /// Логика регистрации нового пользователя
+        /// </summary>
         private void Register()
         {
             RegisterWindow registerWindow = new RegisterWindow(){ Owner = Application.Current.MainWindow };
@@ -136,6 +159,9 @@ namespace PhoneBookWPF.ViewModels
             registerWindow.Show();
         }
 
+        /// <summary>
+        /// Выход из аккаунта
+        /// </summary>
         private void Exit()
         {
             this.RequestLogin.IsToken = false;
@@ -146,18 +172,25 @@ namespace PhoneBookWPF.ViewModels
 
             AccessForToken.Token = string.Empty;
         }
-
+        /// <summary>
+        /// Удаление выбранной записи
+        /// </summary>
         private async void DeleteContact()
         {
-            int id = CurrentContac.Id;
+            int id = CurrentContact.Id;
 
             HttpStatusCode result = await Context.DeleteContact(id);
 
-            if (result == HttpStatusCode.NotFound) { MessageBox.Show(result.ToString()); }
-
             if (result == HttpStatusCode.OK) { AccessForToken_onСhangedToken(); }
+
+            if (result == HttpStatusCode.Forbidden) { ShowStatusBarText("Отказано в доступе!"); }
+
+            if (result == HttpStatusCode.NotFound) { ShowStatusBarText(result.ToString()); }
         }
 
+        /// <summary>
+        /// Добавление выбранной записи
+        /// </summary>
         private async void AddContact()
         {
             NewContactWindow newContactWindow = new NewContactWindow() { Owner = Application.Current.MainWindow};
@@ -174,9 +207,31 @@ namespace PhoneBookWPF.ViewModels
 
                 if (httpStatusCode == HttpStatusCode.OK) { AccessForToken_onСhangedToken(); }
 
-                else { MessageBox.Show(httpStatusCode.ToString()); }
+                else 
+                {
+                    ShowStatusBarText(httpStatusCode.ToString());
+                    AccessForToken_onСhangedToken();
+                }
             }
         }
+
+        /// <summary>
+        /// Редактирование выбранной записи
+        /// </summary>
+        private async void EditContact()
+        {
+            Contact currentContact = CurrentContact;
+            int id = CurrentContact.Id;
+
+            HttpStatusCode httpStatusCode = await Context.UpdateContact(id, currentContact);     
+
+            if (httpStatusCode == HttpStatusCode.OK) { AccessForToken_onСhangedToken(); }
+
+            if (httpStatusCode == HttpStatusCode.Forbidden) { ShowStatusBarText("Отказано в доступе!"); }
+
+            else { ShowStatusBarText(httpStatusCode.ToString()); }
+        }
+
         #endregion
 
         /// <summary>
@@ -240,31 +295,29 @@ namespace PhoneBookWPF.ViewModels
             else return "нет данных";
         }
 
-
         /// <summary>
         /// Метод удаляющий текст сообщения в StatusBar
         /// </summary>
         /// <param name="message">Текст информационного сообщения</param>
-        //private void ShowStatusBarText(string message)
-        //{
-        //    StatusBarText = message;
+        private void ShowStatusBarText(string message)
+        {
+            StatusBarText = message;
 
-        //    Window window = Application.Current.MainWindow;
+            Window window = Application.Current.MainWindow;
 
-        //    var timer = new System.Timers.Timer();
+            var timer = new System.Timers.Timer();
 
-        //    timer.Interval = 2000;
+            timer.Interval = 2500;
 
-        //    timer.Elapsed += delegate (object sender, System.Timers.ElapsedEventArgs e)
-        //    {
-        //        timer.Stop();
-        //        //удалите текст сообщения о состоянии с помощью диспетчера, поскольку таймер работает в другом потоке
-        //        window.Dispatcher.BeginInvoke(new Action(() =>
-        //        {
-        //            StatusBarText = "";
-        //        }));
-        //    };
-        //    timer.Start();
-        //}
+            timer.Elapsed += delegate (object sender, System.Timers.ElapsedEventArgs e)
+            {
+                timer.Stop();
+                
+                StatusBarText = "Здесь будет подсказка";
+            };
+            timer.Start();
+        }
     }
 }
+
+

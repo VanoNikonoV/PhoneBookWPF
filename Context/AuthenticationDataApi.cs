@@ -6,7 +6,9 @@ using System.Text;
 
 namespace PhoneBookWPF.Context
 {
-
+    /// <summary>
+    /// Класс посредник с web-Api. Отвечающий за аутентификация и авторизация пользователя приложения, получение jwt-tokena
+    /// </summary>
     public class AuthenticationDataApi :IAuthenticationData
     {
         public AuthenticationDataApi() { }

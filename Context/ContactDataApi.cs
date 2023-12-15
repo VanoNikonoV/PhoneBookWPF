@@ -7,6 +7,9 @@ using PhoneBookWPF.Models;
 
 namespace PhoneBookWPF.Context
 {
+    /// <summary>
+    /// Класс посредник с web-Api. Отвечающий за основные операция с данными: чтение, запись ....
+    /// </summary>
     public class ContactDataApi : IContactData
     {
         private readonly IRequestLogin _login;
@@ -127,6 +130,7 @@ namespace PhoneBookWPF.Context
                 return (NullContact.Create(), HttpStatusCode.NotFound);
             }
         }
+
         /// <summary>
         /// Производит обновление данных контакта
         /// </summary>

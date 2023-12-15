@@ -9,7 +9,7 @@
         Title="Телефонна книга" Height="600" Width="1090"
         Icon="/Images/phonebook_48px.png"
         ResizeMode="NoResize">
-    
+
     <Grid ShowGridLines="False" 
           Height="584" 
           VerticalAlignment="Bottom">
@@ -18,7 +18,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="35"/>
             <ColumnDefinition Width="185"/>
@@ -45,7 +45,7 @@
                     ToolTip="Войти в программу под учетной записью"
                     Content="Логин" 
                     Margin="5 0 5 0"
-                    Command="{Binding LoginCommand}"> 
+                    Command="{Binding LoginCommand}">
             </Button>
 
             <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -70,6 +70,7 @@
             </Button>
         </StackPanel>
 
+        <!--Боковая панель-->
         <StackPanel Orientation="Vertical"
                     Grid.Column="0" Grid.Row="0"
                     Grid.RowSpan="2"
@@ -85,7 +86,7 @@
                 Padding="0" 
                 ToolTip="Добавить запись"
                 Command="{Binding AddContactCommand}">
-                
+
                 <materialDesign:PackIcon Kind="AccountPlusOutline" 
                                          Width="25" Height="25" 
                                          HorizontalAlignment="Center" 
@@ -101,7 +102,9 @@
                 Cursor="Hand" 
                 Margin="0 5"
                 Padding="0" 
-                ToolTip="Редактировать запись">
+                ToolTip="Редактировать запись"
+                Command="{Binding EditContactCommand}">
+
                 <materialDesign:PackIcon Kind="EditOutline" 
                                          Width="25" Height="25" 
                                          HorizontalAlignment="Center" 
@@ -127,6 +130,7 @@
             </Button>
         </StackPanel>
 
+        <!--Панель редактирования-->
         <StackPanel Name="СustomerEditPanel"
                 Orientation="Vertical"
                 Grid.Column="1" Grid.Row="0"
@@ -136,8 +140,8 @@
 
             <Label Content="Панель редактирования" 
                    Style="{StaticResource MaterialDesignLabel}" 
-                   FontWeight="Bold" Foreground="#DD235DE4" HorizontalAlignment="Center"
-                   />
+                   Foreground="#FF3F51B5" 
+                   HorizontalAlignment="Center" FontWeight="Bold"/>
             <TextBox 
                  materialDesign:HintAssist.Hint="Имя клиента" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -183,7 +187,8 @@
             CornerRadius="25"
             Margin="5">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="50" Color="Green" ShadowDepth="0"/>
+                <DropShadowEffect BlurRadius="50" Color="Green" 
+                                  ShadowDepth="0"/>
             </Border.Effect>
 
             <DataGrid x:Name="gridView"
@@ -192,33 +197,34 @@
               IsSynchronizedWithCurrentItem="True"
               AutoGenerateColumns="False" 
               ItemsSource="{Binding ContactView}"
-              SelectedItem="{Binding CurrentContac, UpdateSourceTrigger=PropertyChanged}"
-              IsReadOnly="False"
+              SelectedItem="{Binding CurrentContact,
+                    UpdateSourceTrigger=PropertyChanged}"
+              IsReadOnly="True"
               CanUserAddRows="False">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn x:Name="id"
+                    <DataGridTextColumn 
                                 Binding="{Binding Id}"
                                 Header="ID"
                                 IsReadOnly="True" 
                                 Width="60"/>
-                    <DataGridTextColumn x:Name="surname"
+                    <DataGridTextColumn 
                                 Binding="{Binding LastName}"
                                 Header="Фамилия"
                                 Width="120"/>
-                    <DataGridTextColumn x:Name="name"
+                    <DataGridTextColumn 
                                 Binding="{Binding FirstName}"
                                 Header="Имя"    
                                 Width="100"/>
-                    <DataGridTextColumn x:Name="patronymic"
+                    <DataGridTextColumn 
                                 Binding="{Binding MiddleName}"
                                 Header="Отчество"
                                 Width="150"/>
-                    <DataGridTextColumn x:Name="telefon"
+                    <DataGridTextColumn 
                                 Binding="{Binding Telefon}"
                                 Header="Телефон"  
                                 Width="120"/>
-                    <DataGridTextColumn x:Name="e_mail"
+                    <DataGridTextColumn 
                                 Binding="{Binding Address}"
                                 Header="Адрес" 
                                 Width="130"/>
@@ -227,15 +233,15 @@
                                         Width="150"/>
                 </DataGrid.Columns>
             </DataGrid>
-
-            
         </Border>
+
+  
+                <TextBlock Grid.Row="3" Grid.Column="1"
+                    Text="{Binding StatusBarText, 
+                           UpdateSourceTrigger=PropertyChanged}" 
+                           Width="195" Foreground="#FFEF1818" 
+                           Height="30" VerticalAlignment="Center"/>
         
-        <StatusBar Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusBarText}" />
-            </StatusBarItem>
-        </StatusBar>
 
     </Grid>
 </Window>

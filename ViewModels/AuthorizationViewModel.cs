@@ -51,8 +51,6 @@ namespace PhoneBookWPF.ViewModels
             {
                 RequestLogin.IsToken = true;
 
-                //MessageBox.Show(responseText);
-
                 this.Owner.Close();
             }
             else
