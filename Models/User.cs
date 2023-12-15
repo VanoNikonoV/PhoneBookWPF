@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace PhoneBookWPF.Models
 {
-    public class User: IDataErrorInfo, INotifyPropertyChanged
+    public class User : IDataErrorInfo, INotifyPropertyChanged
     {
         private string firstName = string.Empty;
         public string FirstName 

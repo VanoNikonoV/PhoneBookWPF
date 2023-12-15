@@ -12,13 +12,13 @@
         WindowStartupLocation="CenterScreen" 
         ResizeMode="NoResize"
         Title="Новый контакт" 
-        Height="500" Width="300" 
+        Height="550" Width="330" 
         Icon="/Images/phonebook_48px.png">
-    
+
     <Grid Background="#FFDADADA">
         <Grid.RowDefinitions>
-            <RowDefinition Height="400"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="450"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
 
         <Border Width="250" 
@@ -26,49 +26,59 @@
                VerticalAlignment="Center" 
                CornerRadius="15"
                Padding="10"
-               Margin="0 25">
+               Margin="0 20">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="50" Color="Green" ShadowDepth="0"/>
             </Border.Effect>
-            
-            <StackPanel DataContext="{Binding User}"
+
+            <StackPanel DataContext="{Binding NewContact}"
                          Orientation="Vertical" 
                          HorizontalAlignment="Center" 
                          VerticalAlignment="Center"
                          Width="200">
-                <Label Content="Создайте новый контакт" FontWeight="Bold" HorizontalAlignment="Center" FontSize="16"/>
+                
+                <Label Content="Создайте новый контакт" FontWeight="Bold" 
+                       HorizontalAlignment="Center" FontSize="16"/>
 
-                <TextBox x:Name="NameTextBox" 
+                <TextBox
                        materialDesign:HintAssist.Hint="Имя клиента" 
                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                       Margin="5 5"
-                       Text="{Binding FirstName}"/>
-                <TextBox x:Name="SurNameTextBox" 
+                       Text="{Binding FirstName, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+                <TextBox 
                        materialDesign:HintAssist.Hint="Фамилая клиента" 
                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                       Margin="5 5"
-                       Text="{Binding LastName}"/>
-                <TextBox x:Name="PatronymicTextBox" 
+                       Text="{Binding LastName,UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+                <TextBox 
                        materialDesign:HintAssist.Hint="Отчество клиента" 
                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                       Margin="5 5"
-                       Text="{Binding MiddleName}"/>
-                <TextBox x:Name="TelefonTextBox" 
+                       Text="{Binding MiddleName, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+                <TextBox  
                        materialDesign:HintAssist.Hint="Номер телефона" 
                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                       Margin="5 5"
-                       Text="{Binding Telefon}"/>
-                <TextBox x:Name="E_mailTextBox" 
+                       Text="{Binding Telefon, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+
+                <TextBox 
+                        materialDesign:HintAssist.Hint="Адрес" 
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Text="{Binding Address, UpdateSourceTrigger=LostFocus, 
+                                 ValidatesOnDataErrors=True}"/>
+
+                <TextBox 
                        materialDesign:HintAssist.Hint="Описание" 
-                       Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                       Margin="5 5" Height="100"
-                       Text="{Binding Description}"/>
+                       Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                       Height="120"
+                       Text="{Binding Description, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
 
             </StackPanel>
         </Border>
 
         <Button Content="Сохранить" Width="155" 
-         Command="{Binding RegisterCommand}"
+         Command="{Binding SaveContactCommand}"
          HorizontalAlignment="Center"
          Grid.Row="1">
         </Button>

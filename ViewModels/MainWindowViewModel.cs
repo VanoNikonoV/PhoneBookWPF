@@ -155,29 +155,27 @@ namespace PhoneBookWPF.ViewModels
 
             if (result == HttpStatusCode.NotFound) { MessageBox.Show(result.ToString()); }
 
-            if (result == HttpStatusCode.OK) { AccessForToken_onСhangedToken();}
+            if (result == HttpStatusCode.OK) { AccessForToken_onСhangedToken(); }
         }
 
-        private void AddContact()
+        private async void AddContact()
         {
-            //ValidationResult result = await _validator.ValidateAsync(contact);
+            NewContactWindow newContactWindow = new NewContactWindow() { Owner = Application.Current.MainWindow};
 
-            //if (!result.IsValid)
-            //{
-            //    result.AddToModelState(this.ModelState);
+            NewContactViewModel newContactViewModel = new(newContactWindow);
 
-            //    return View(contact);
-            //}
-            //else
-            //{
-            //    HttpStatusCode statusCode = await _context.CreateContact(contact);
+            newContactWindow.DataContext = newContactViewModel;
 
-            //    if (statusCode == HttpStatusCode.Created) { return RedirectToAction(nameof(Index)); }
-            //    if (contact == null || statusCode == HttpStatusCode.NotFound) { return NotFound(); }
-            //    if (statusCode == HttpStatusCode.Unauthorized) { return RedirectToAction(nameof(NotAuthentication)); }
+            newContactWindow.ShowDialog();
 
-            //    return RedirectToAction(nameof(Index));
-            //}
+            if (newContactWindow.DialogResult == true)
+            {
+               HttpStatusCode httpStatusCode =  await Context.CreateContact(newContactViewModel.NewContact);
+
+                if (httpStatusCode == HttpStatusCode.OK) { AccessForToken_onСhangedToken(); }
+
+                else { MessageBox.Show(httpStatusCode.ToString()); }
+            }
         }
         #endregion
 

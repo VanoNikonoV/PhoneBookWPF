@@ -83,7 +83,9 @@
                 Margin="0 5"
                 Cursor="Hand" 
                 Padding="0" 
-                ToolTip="Добавить запись">
+                ToolTip="Добавить запись"
+                Command="{Binding AddContactCommand}">
+                
                 <materialDesign:PackIcon Kind="AccountPlusOutline" 
                                          Width="25" Height="25" 
                                          HorizontalAlignment="Center" 
