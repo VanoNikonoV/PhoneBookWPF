@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:PhoneBookWPF"
         mc:Ignorable="d" 
         Title="Телефонна книга" Height="600" Width="1090"
-        Icon="/View/phonebook_48px.png" ResizeMode="NoResize">
+        Icon="/Images/phonebook_48px.png"
+        ResizeMode="NoResize">
     
     <Grid ShowGridLines="False" 
           Height="584" 
@@ -115,9 +116,7 @@
                 Cursor="Hand" 
                 Padding="0" 
                 ToolTip="Удалить запись"
-                Command="{Binding DeleteContactCommand}"
-                CommandParameter="{Binding ElementName=gridView, 
-                Path=SelectedItem}">
+                Command="{Binding DeleteContactCommand}">
                 <materialDesign:PackIcon Kind="AccountCancel" 
                                          Width="25" Height="25" 
                                          HorizontalAlignment="Center" 
@@ -158,9 +157,10 @@
                  Margin="5 5"
                  Text="{Binding Telefon}"/>
             <TextBox x:Name="E_mailTextBox" 
-                 materialDesign:HintAssist.Hint="e-mail" 
+                 materialDesign:HintAssist.Hint="Описание" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
+                 Height="150"
                  Text="{Binding Description}"/>
 
         </StackPanel>
@@ -179,6 +179,7 @@
               IsSynchronizedWithCurrentItem="True"
               AutoGenerateColumns="False" 
               ItemsSource="{Binding ContactView}"
+              SelectedItem="{Binding CurrentContac, UpdateSourceTrigger=PropertyChanged}"
               IsReadOnly="False"
               CanUserAddRows="False">
 

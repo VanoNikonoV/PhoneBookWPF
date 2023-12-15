@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="View\phonebook_48px.png" />
+    <None Remove="Images\phonebook_48px.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="View\phonebook_48px.png" />
+    <Resource Include="Images\phonebook_48px.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

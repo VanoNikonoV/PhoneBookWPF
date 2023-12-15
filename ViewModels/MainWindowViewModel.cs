@@ -12,6 +12,19 @@ namespace PhoneBookWPF.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+        public MainWindowViewModel()
+        {
+            Context = new ContactDataApi(this.RequestLogin);
+
+            this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию" };
+
+            AccessForToken.onСhangedToken += AccessForToken_onСhangedToken;
+
+            IEnumerable<IContact> tempCollection = Context.GetAllContact().Result;
+
+            this.ContactView = HidingData(tempCollection);
+        }
+
         private RequestLogin _requestLogin = new RequestLogin();
 
         public RequestLogin RequestLogin
@@ -24,7 +37,6 @@ namespace PhoneBookWPF.ViewModels
         //public string StatusBarText { get; set; }
 
         public  IContactData Context { get; private set; }
-
         
 
         private ObservableCollection<IContact>? contactView;
@@ -39,19 +51,17 @@ namespace PhoneBookWPF.ViewModels
             set => Set(ref contactView, value, "ContactView");
         }
 
-        public MainWindowViewModel()
-        {
-            Context = new ContactDataApi(this.RequestLogin);
-
-            this.RequestLogin = new RequestLogin() { Email = "Проидите аутинтификацию"};
-
-            AccessForToken.onСhangedToken += AccessForToken_onСhangedToken;
-
-            IEnumerable<IContact> tempCollection = Context.GetAllContact().Result;
-
-            this.ContactView = HidingData(tempCollection);
+        private Contact currentContact;
+        public Contact CurrentContac 
+        {   
+            get => currentContact;
+            set => Set(ref currentContact, value, "CurrentContac");
         }
+        
 
+        /// <summary>
+        /// Обновление списка после смены пользователя, изменения данных в коллекции
+        /// </summary>
         private async void AccessForToken_onСhangedToken()
         {
             if (!(AccessForToken.Token == string.Empty)) 
@@ -86,9 +96,14 @@ namespace PhoneBookWPF.ViewModels
         public RelayCommand RegisterCommand => 
             registerCommand ?? (registerCommand = new RelayCommand(Register, CanLogin));
 
-        private RelayCommandT<IContact> deleteContactCommand = null;
-        public RelayCommandT<IContact> DeleteContactCommand => 
-            deleteContactCommand ?? (deleteContactCommand = new RelayCommandT<IContact>(DeleteContact, CanDelete));
+        private RelayCommand deleteContactCommand = null;
+        public RelayCommand DeleteContactCommand => 
+            deleteContactCommand ?? (deleteContactCommand = new RelayCommand(DeleteContact, CanExit));
+
+        private RelayCommand addContactCommand = null;
+        public RelayCommand AddContactCommand => 
+            addContactCommand ?? (addContactCommand = new RelayCommand(AddContact, CanExit));
+
         #endregion
 
         #region Методы для команд
@@ -106,16 +121,10 @@ namespace PhoneBookWPF.ViewModels
             return flag;
         }
 
-        private bool CanDelete(IContact contact)
-        {
-            bool flag = RequestLogin.IsToken ? true : false;
-
-            return flag;
-        }
-
         private void Login()
         {
-            AuthorizationWindow authorizationWindow = new AuthorizationWindow(RequestLogin) { Owner = Application.Current.MainWindow};
+            AuthorizationWindow authorizationWindow = 
+                new AuthorizationWindow(RequestLogin) { Owner = Application.Current.MainWindow };
 
             authorizationWindow.Show(); 
         }
@@ -138,15 +147,45 @@ namespace PhoneBookWPF.ViewModels
             AccessForToken.Token = string.Empty;
         }
 
-        private async void DeleteContact(IContact contact)
+        private async void DeleteContact()
         {
-            HttpStatusCode result = await Context.DeleteContact(contact.Id);
+            int id = CurrentContac.Id;
+
+            HttpStatusCode result = await Context.DeleteContact(id);
 
             if (result == HttpStatusCode.NotFound) { MessageBox.Show(result.ToString()); }
 
             if (result == HttpStatusCode.OK) { AccessForToken_onСhangedToken();}
         }
+
+        private void AddContact()
+        {
+            //ValidationResult result = await _validator.ValidateAsync(contact);
+
+            //if (!result.IsValid)
+            //{
+            //    result.AddToModelState(this.ModelState);
+
+            //    return View(contact);
+            //}
+            //else
+            //{
+            //    HttpStatusCode statusCode = await _context.CreateContact(contact);
+
+            //    if (statusCode == HttpStatusCode.Created) { return RedirectToAction(nameof(Index)); }
+            //    if (contact == null || statusCode == HttpStatusCode.NotFound) { return NotFound(); }
+            //    if (statusCode == HttpStatusCode.Unauthorized) { return RedirectToAction(nameof(NotAuthentication)); }
+
+            //    return RedirectToAction(nameof(Index));
+            //}
+        }
         #endregion
+
+        /// <summary>
+        /// Сокрытие некоторых данных о контакте
+        /// </summary>
+        /// <param name="tempCollection">Коллекция контактов</param>
+        /// <returns>Коллекция контактов со скрытими данными</returns>
         private ObservableCollection<IContact> HidingData(IEnumerable<IContact> tempCollection)
         {
             ObservableCollection<IContact> ContactsForAnonymous = new ObservableCollection<IContact>();
@@ -175,7 +214,7 @@ namespace PhoneBookWPF.ViewModels
         }
 
         /// <summary>
-        /// Сокрыте данных контакта
+        /// Сокрыте данных (одного поля) контакта
         /// </summary>
         /// <param name="inputData">Входные данные</param>
         /// <returns>Скрытые данные либо "нет данных"</returns>

@@ -12,7 +12,7 @@
         VerticalAlignment="Center" 
         HorizontalContentAlignment="Center" 
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" Icon="/Images/phonebook_48px.png">
     
     <Grid Background="#FFDADADA">
         <Border Width="250" 
@@ -20,9 +20,11 @@
              VerticalAlignment="Center" 
              CornerRadius="15"
              Padding="10">
+            
             <Border.Effect>
                 <DropShadowEffect BlurRadius="50" Color="Green" ShadowDepth="0"/>
             </Border.Effect>
+            
             <StackPanel Orientation="Vertical" 
                      HorizontalAlignment="Center" 
                      VerticalAlignment="Center"
@@ -47,10 +49,9 @@
                      Command="{Binding LoginCommand}"
                      CommandParameter="{Binding ElementName=password}"
                      HorizontalAlignment="Right"/>
+                    
                 </Grid>
-
             </StackPanel>
-          
         </Border>
     </Grid>
 </Window>
