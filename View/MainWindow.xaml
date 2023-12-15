@@ -138,32 +138,43 @@
                    Style="{StaticResource MaterialDesignLabel}" 
                    FontWeight="Bold" Foreground="#DD235DE4" HorizontalAlignment="Center"
                    />
-            <TextBox x:Name="NameTextBox" 
+            <TextBox 
                  materialDesign:HintAssist.Hint="Имя клиента" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
-                 Text="{Binding FirstName}"/>
-            <TextBox x:Name="SurNameTextBox" 
+                 Text="{Binding FirstName, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+            <TextBox 
                  materialDesign:HintAssist.Hint="Фамилая клиента" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
-                 Text="{Binding LastName}"/>
-            <TextBox x:Name="PatronymicTextBox" 
+                 Text="{Binding LastName, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+            <TextBox  
                  materialDesign:HintAssist.Hint="Отчество клиента" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
-                 Text="{Binding MiddleName}"/>
-            <TextBox x:Name="TelefonTextBox" 
+                 Text="{Binding MiddleName, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+            <TextBox  
                  materialDesign:HintAssist.Hint="Номер телефона" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
-                 Text="{Binding Telefon}"/>
-            <TextBox x:Name="E_mailTextBox" 
+                 Text="{Binding Telefon, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+            <TextBox  
+                 materialDesign:HintAssist.Hint="Адрес" 
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="5 5"
+                 Text="{Binding Address, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
+            <TextBox 
                  materialDesign:HintAssist.Hint="Описание" 
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="5 5"
                  Height="150"
-                 Text="{Binding Description}"/>
+                 Text="{Binding Description, UpdateSourceTrigger=LostFocus, 
+                                ValidatesOnDataErrors=True}"/>
 
         </StackPanel>
 

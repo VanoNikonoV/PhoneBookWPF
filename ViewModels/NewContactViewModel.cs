@@ -1,5 +1,4 @@
-﻿using PhoneBook.Models;
-using PhoneBookWPF.Commands;
+﻿using PhoneBookWPF.Commands;
 using PhoneBookWPF.Models;
 using PhoneBookWPF.View.Base;
 using System.Windows;
